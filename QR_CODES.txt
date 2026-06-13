@@ -1,0 +1,5 @@
+새벽벌도서관: QM-DEMO-LIBRARY
+금정회관: QM-DEMO-MEAL
+학생지원 공지 확인: QM-DEMO-NOTICE
+히든스팟: QM-DEMO-HIDDEN
+팀 챌린지: QM-DEMO-TEAM

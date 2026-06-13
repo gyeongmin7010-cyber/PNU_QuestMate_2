@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PNU QuestMate V3 | QR 인증형 AI 캠퍼스 퀘스트</title>
+  <style>
+    :root {
+      --bg:#071324; --panel:#0f2138; --panel2:#132b46; --text:#edf6ff; --muted:#a9bfd4;
+      --accent:#35e5bd; --accent2:#60a5fa; --danger:#fb7185; --ok:#4ade80; --warn:#fbbf24;
+      --line:rgba(255,255,255,.12); --card:#f8fbff; --ink:#152235;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:radial-gradient(circle at 10% 0%,#143d63 0,#071324 42%,#050914 100%);color:var(--text)}
+    a{color:#bfefff}
+    .wrap{max-width:1220px;margin:auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:stretch}
+    .glass{background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.06));border:1px solid var(--line);border-radius:28px;box-shadow:0 24px 70px rgba(0,0,0,.35);backdrop-filter:blur(14px)}
+    .pad{padding:28px}
+    .badge{display:inline-flex;gap:8px;align-items:center;padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.08);color:#d9ecff;font-weight:800;font-size:14px}
+    .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 24px var(--accent)}
+    h1{font-size:clamp(44px,8vw,76px);line-height:.98;margin:28px 0 18px;font-weight:950;letter-spacing:-.06em}
+    h1 span{background:linear-gradient(90deg,var(--accent),#58b6ff,#a78bfa);-webkit-background-clip:text;color:transparent}
+    h2{margin:0 0 14px;font-size:24px}
+    h3{margin:0 0 10px;font-size:18px}
+    p{line-height:1.65;color:#d2e4f3}
+    .lead{font-size:20px;line-height:1.75;color:#d7e6f5}
+    .buttons{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+    button,.btn{appearance:none;border:0;border-radius:16px;padding:14px 18px;font-weight:900;cursor:pointer;color:#071324;background:linear-gradient(135deg,var(--accent2),#7c3aed);color:white;box-shadow:0 14px 30px rgba(56,128,255,.25);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+    button.secondary{background:rgba(255,255,255,.10);border:1px solid var(--line);color:var(--text);box-shadow:none}
+    button.success{background:linear-gradient(135deg,#10b981,#22c55e)}
+    button.warn{background:linear-gradient(135deg,#f59e0b,#f97316)}
+    button.danger{background:linear-gradient(135deg,#ef4444,#fb7185)}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+    .stat{padding:18px 20px;border-radius:22px;background:rgba(255,255,255,.08);border:1px solid var(--line)}
+    .num{font-size:34px;font-weight:950}
+    .muted{color:var(--muted);font-size:14px}
+    .phone{background:#eaf3ff;color:var(--ink);border-radius:28px;padding:22px;min-height:540px;box-shadow:inset 0 0 0 1px rgba(20,30,50,.08)}
+    .phone p,.phone .muted{color:#475569}
+    .quest-card{background:white;border-radius:22px;padding:18px;margin:14px 0;box-shadow:0 10px 25px rgba(15,35,70,.08);border:1px solid #e5edf8}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:8px 10px;border-radius:999px;background:#e8f3ff;color:#0d4d72;font-weight:800;font-size:13px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
+    .section{margin-top:24px}
+    .card{padding:20px;border-radius:24px;background:rgba(255,255,255,.08);border:1px solid var(--line)}
+    .list{display:flex;flex-direction:column;gap:10px;max-height:300px;overflow:auto;padding-right:4px}
+    .item{padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid var(--line)}
+    .item b{display:block;margin-bottom:5px}
+    .diag-ok{color:#86efac;font-weight:900} .diag-warn{color:#fde68a;font-weight:900} .diag-bad{color:#fca5a5;font-weight:900}
+    .qr-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+    .qr-card{background:white;color:#111827;border-radius:18px;padding:14px;text-align:center;border:1px solid #e5e7eb}
+    .qr-card img{width:100%;max-width:130px;image-rendering:pixelated;border-radius:10px;background:white}
+    .qr-card b{display:block;margin:8px 0 4px}
+    input,select{width:100%;padding:13px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:white;font-weight:800}
+    input::placeholder{color:#99a7b5}
+    label{display:block;font-size:13px;color:#bdd2e7;font-weight:900;margin:0 0 6px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+    .stampbook{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+    .stamp{padding:16px;border-radius:18px;background:linear-gradient(135deg,rgba(53,229,189,.14),rgba(96,165,250,.10));border:1px solid rgba(53,229,189,.25)}
+    .stamp .icon{font-size:30px}
+    .evidence{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;background:rgba(0,0,0,.24);padding:10px;border-radius:12px;overflow:auto}
+    video{width:100%;border-radius:18px;background:#000;max-height:280px}
+    .scanbox{display:none;margin-top:12px}
+    .scanbox.on{display:block}
+    .small{font-size:12px}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+    .tab{background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--text);box-shadow:none;padding:10px 14px;border-radius:999px}
+    .tab.active{background:var(--accent);color:#052019}
+    .panel{display:none} .panel.active{display:block}
+    @media(max-width:900px){.hero,.grid,.grid2{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.qr-grid{grid-template-columns:repeat(2,1fr)}.form-row{grid-template-columns:1fr}.wrap{padding:16px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="glass pad">
+      <div class="badge"><span class="dot"></span> Netlify Live Connected Prototype · V3 QR 인증형</div>
+      <h1>PNU <span>QuestMate</span></h1>
+      <p class="lead">부산대 공개 데이터의 식단·좌석·공지·학사일정을 불러오고, AI가 오늘의 캠퍼스 퀘스트로 바꿉니다. V3는 QR·위치·시간 기반 체크인으로 “실제로 수행했는지” 확인하는 스탬프 인증까지 추가했습니다.</p>
+      <div class="buttons">
+        <button onclick="refreshData()">실시간 데이터 새로고침</button>
+        <button class="secondary" onclick="generateQuest()">오늘의 퀘스트 생성</button>
+        <button class="success" onclick="showPanel('checkin')">QR 인증하러 가기</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="num" id="mealCount">-</div><div class="muted">식단 항목</div></div>
+        <div class="stat"><div class="num" id="seatCount">-</div><div class="muted">좌석 항목</div></div>
+        <div class="stat"><div class="num" id="noticeCount">-</div><div class="muted">공지 항목</div></div>
+        <div class="stat"><div class="num" id="stampCount">0</div><div class="muted">획득 스탬프</div></div>
+      </div>
+      <div class="section muted" id="updatedAt">아직 새로고침 전입니다.</div>
+    </div>
+    <div class="glass pad">
+      <div class="phone">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h2>AI Quest Preview</h2><span class="muted" id="phoneTime">대기 중</span></div>
+        <div id="questPreview">
+          <div class="quest-card"><h3>데이터를 새로고침해 퀘스트를 생성하세요</h3><p>실시간 데이터를 불러오면 좌석·식단·공지·학사일정을 조합해 오늘의 미션을 만듭니다.</p><div class="chips"><span class="chip">식단</span><span class="chip">좌석</span><span class="chip">공지</span><span class="chip">QR 인증</span></div></div>
+          <div class="quest-card"><h3>효원 스탬프북</h3><p>퀘스트 장소 QR을 인증하면 스탬프와 인증 로그가 저장됩니다.</p><button onclick="showPanel('checkin')">스탬프 인증 시작</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-data" onclick="showPanel('data')">실시간 데이터</button>
+    <button class="tab" id="tab-checkin" onclick="showPanel('checkin')">QR 체크인</button>
+    <button class="tab" id="tab-stamps" onclick="showPanel('stamps')">스탬프북·인증로그</button>
+    <button class="tab" id="tab-admin" onclick="showPanel('admin')">관리자용 QR 예시</button>
+  </div>
+
+  <section id="panel-data" class="panel active">
+    <div class="grid2">
+      <div class="card"><h2>연동 진단</h2><div id="diagnostics" class="list"><div class="item">새로고침 버튼을 눌러 데이터 연동 상태를 확인하세요.</div></div></div>
+      <div class="card"><h2>AI 추천 근거</h2><div id="aiReason" class="list"><div class="item">좌석 잔여석, 식단 등록 여부, 최근 공지, 학사일정을 바탕으로 퀘스트를 만듭니다.</div></div></div>
+    </div>
+    <div class="grid">
+      <div class="card"><h2>식단</h2><div id="meals" class="list"><div class="item">대기 중</div></div></div>
+      <div class="card"><h2>좌석현황</h2><div id="seats" class="list"><div class="item">대기 중</div></div></div>
+      <div class="card"><h2>공지·학사</h2><div id="notices" class="list"><div class="item">대기 중</div></div></div>
+    </div>
+  </section>
+
+  <section id="panel-checkin" class="panel">
+    <div class="grid2">
+      <div class="card">
+        <h2>Quest Check-in</h2>
+        <p>실제 서비스에서는 학교가 장소별 QR을 발급·부착하고, 앱은 QR 코드·현재 위치·날짜를 확인한 뒤 스탬프를 지급합니다. 이 프로토타입은 데모 QR과 Netlify Function 검증으로 구조를 시연합니다.</p>
+        <div class="form-row">
+          <div><label>QR 코드 또는 인증코드</label><input id="codeInput" placeholder="예: QM-DEMO-LIBRARY" /></div>
+          <div><label>인증 모드</label><select id="modeSelect"><option value="demo">발표용 데모 위치</option><option value="real">실제 GPS 위치</option></select></div>
+          <button onclick="verifyManualCode()">인증하기</button>
+        </div>
+        <div class="buttons">
+          <button class="secondary" onclick="startQrScan()">카메라로 QR 스캔</button>
+          <button class="secondary" onclick="stopQrScan()">스캔 중지</button>
+          <button class="warn" onclick="quickDemo('QM-DEMO-LIBRARY')">도서관 데모 인증</button>
+        </div>
+        <div id="scanbox" class="scanbox"><video id="video" playsinline muted></video><p class="small muted">카메라 권한 허용 후 예시 QR을 비추면 자동으로 인증됩니다. BarcodeDetector 미지원 브라우저는 코드 입력을 사용하세요.</p></div>
+        <div id="checkinResult" class="section"></div>
+      </div>
+      <div class="card">
+        <h2>예시 QR</h2>
+        <div class="qr-grid" id="qrQuick"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="panel-stamps" class="panel">
+    <div class="grid2">
+      <div class="card"><h2>효원 스탬프북</h2><div id="stampbook" class="stampbook"></div><div class="buttons"><button class="secondary" onclick="exportLog()">인증 로그 JSON 다운로드</button><button class="danger" onclick="clearStamps()">스탬프 초기화</button></div></div>
+      <div class="card"><h2>인증 로그</h2><div id="evidenceLog" class="list"></div></div>
+    </div>
+  </section>
+
+  <section id="panel-admin" class="panel">
+    <div class="card">
+      <h2>관리자용 QR 예시</h2>
+      <p>발표 때는 “실제 운영 시 학교가 장소별 QR을 생성하고 관리한다”고 설명하면 됩니다. 단, 현재 프로토타입은 발표 시연용 샘플 QR입니다. 실제 운영에는 관리자 페이지·DB·QR 교체 주기·부정 인증 방지 정책이 추가되어야 합니다.</p>
+      <div class="qr-grid" id="qrAdmin"></div>
+      <div class="section evidence">운영 구조: 학교 관리자 QR 발급 → 장소 부착 → 학생 QR 스캔 → Netlify Function/서버 검증 → GPS·시간 확인 → DB 저장 → 스탬프 지급</div>
+    </div>
+  </section>
+</div>
+<script>
+const QR_CODES = {"library": {"code": "QM-DEMO-LIBRARY", "label": "새벽벌도서관", "emoji": "📚", "place": "새벽벌도서관 입구/열람실 안내판", "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABlklEQVR4nO2YQW7kIBBFXw1IvbSlPkCOAjfIkUZzpNzAPkoOMFKzjIT1swAmnSwys2nbY1MLDOZJfJULKJeJv9v84x8g6FSnOtWpTu2dsmoei4DF1N7ETXUdm/LlESaAdEXz+NuL5DIAtpWuM1GpxXh4vcgiYGZ+e11HpvyXsYFDpMet2KlvKYtrr3hKqsX9ICAB4WU0keD+p2uv6g9BzWZmNgLgZJGlpDlb6zo0VeL+PsaHN6vbYEtd56EsUrN6SB79atvA4qa6jk21uE/XDEP2mp+yN3CZ+Xlpt8Fe1R+CmsfFIF1EuIGmIWMxXfSZWl/XoakS2RaKlzMWXq6lrzluqOsMFJIkGDKacILWSLc6q2mv6v9vqnr3jxFurjSaAEL3/YOpjzomDBnmkdrbVtcpqCDVQ2Ziser21Gtpq1Ctjmk2gnQD+yn1PGdNSnq9yGLyaEq9prAuNY+LaWIxi7QLdw+6DkjVHLOe906ScssshzbR85yHUC2/L+aKs2FQ+Qrd9w+kvtYxdT90/a7tVKc61amjUO9yz8dxbFskVwAAAABJRU5ErkJggg=="}, "meal": {"code": "QM-DEMO-MEAL", "label": "금정회관", "emoji": "🍚", "place": "금정회관 식당 입구", "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABkUlEQVR4nO3aQa6bMBSF4f8WS29odpClmJ1VXVJ3gJeSBVTCwyeBTgd20jwm7QRI4TJIAH0SR47lXF9h4u9H/vYPCFy5cuXK1bsra0egfgzlcWc4NNclVJIkTUDSDNBJkvRV7Z/r1Cq079JD+gnK1s2igEE3H5brisq+a8aGHZ94XRVW16L0iLLdE12tVZQ0AuRbm/eS5rXaP9eZVZv32QDosHT/kMFix+a6gqpj/9JYyLdPg/i11fCu6c+gbChmZDPTWAJQAuR+8fp+S/X6X5sElqa+Xhmx8/p+S0XdQ410Ik0gTa/32tm7pv+/1XOcAWLbyEpT+ynqhtfHflvViXQP9cyG573Dc51YtfU+CQQzpHGxtreKXt9vqurYP4r5bobSY8RPEzyLz3dNfwr1p49ZW5hTW3hsODbXJVRpvXqNccaGEiCb2Urtn+vMat1LM+KvUNf7NC7B15w9Vbp/yAYW04/e65xN1WPeRwGlFTvKtzkY8cBcF1LZzMx6qEt9K/d9vd9Umb8b5cqVK1eXUL8BN2eobDQQcfMAAAAASUVORK5CYII="}, "notice": {"code": "QM-DEMO-NOTICE", "label": "학생지원 공지 확인", "emoji": "📣", "place": "학생지원센터/학과 게시판", "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABf0lEQVR4nO3ZQW6DMBCF4X9qpC4dKQfoUeBmVW8WjpIbwBKJ6HVhhyZppXZRwITxAkXmk/JEIDOZmPh9tS9/QODKlStXrkpXllcF9BXQX3eaVXPtQtWSpA6sAawhSJJ0r5bPtQvVX+/x9pB38mOwci5XrpZQOsXBFn3H/arr10oU0AMQZAC3P7pKTb9tla99m+71gNXnagQudzd/qem3rdK1vxssXCw/BvO8o6tppVYy95hBECUgSKfrWZ1KTf8cqjezJo5I56mzjJI1K+fai2rNjPZtMJ3iYPbeFZLrWdXU54yVAKw+v34fK5eaftvqtta2DQjGfKq1qQiXmn7bKlfTaaXNugu54HqtnVt9zTHzBxAHk7qpyS87/cbVNMdMBReCrInjg1o+1y7UNMeEoDzELyHXM6vqcaPujumF6I8+v19UtW8j+jhczJo4+P9Wc6of5phArUsF/VG2Vq49KG46Swii1oiUDvIec071OMdUqrXpsGIuV65cuXL1v+oTg2uuPuouybAAAAAASUVORK5CYII="}, "hidden": {"code": "QM-DEMO-HIDDEN", "label": "히든스팟", "emoji": "🗺️", "place": "캠퍼스 추천 휴식 장소", "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABkElEQVR4nO2YTWrEMAxGnxpDlxnoAXoU5wY9a2+QHGUOMBAvCwlfF7Y7f4t2kyYzkRbGdh74Q1aELBO/2/DyBwiccsopp5zaOmXFAgxmBqnudKvq2gUVJUkjWJc3GkmSrqn/17ULKpUYlzTlnfwbrK1rV9Rgr7LuP0/cLRVu1gazLXqiU9Wq71sBCUQ6oDxbU9eOqMHMzA5gHY2sY85lztq6nprKcX+O8Rry162Grap/Bsq6FPJQlnmYPe6XpErcDwdMw/uXCWbTYCXzr6ZrDxT5DaWxruNYi/yoav1W1T82VXzftxNlAIhjUxJ+dN8vRtUaMwUMXmW0pyDSbCK9Tavp2gOFro04NlJPSTyecxakuGyZ0UgaGxHzLeA5Z0mq+L70MRupb5UHoNyC+34Z6iffHyB+gsVjmIwWhNf3y1K3vbSfIj9o+DjV5+1W1T82ddfHjMcApDcZbSOL/Tq69kDd9zGZgtFOAHP9ulX1T0Gd+5hmAekYLh9YW1f/oNR9HxOAdsozz/dOOeWUU09CfQNjrtuFksQ20AAAAABJRU5ErkJggg=="}, "team": {"code": "QM-DEMO-TEAM", "label": "팀 챌린지", "emoji": "🤝", "place": "팀 발표/활동 확인 장소", "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABhElEQVR4nO2aQY6bQBREX4WWZglSDjBHaW4Wzc3gKD5AJLNvVFk0eGxvkg2GmN8L1LSeRC0+n/olZP6+xh//AEFQQQUVVFBHp7SstOz6aT3pd9V1Cirbtq/rbqCxbfuRer2uU1DTUuP+kgSApLS/rjNR+uWC+hc+8bxUerr32P3GTNs9MahnqrU9AORLQj1gu+yv6wTUKEnqQD2NgbnanL11vTVVe85dsDB2CNrHqOGo6t+BUj9JjJI8tAWYEozdHP5+S2r91rYlKXtOol1ORNuEv9+Sos5QtdoBaAse2vsBy8NR1b8HNX2Y7EI1OzCLfI2esyn14O+nn1a+Ui9AU7SXrjNQS8+5reXs2phse4l3jqr+/6Zq3a8+vinkYU5ibf/eS9cZqFr3a47ZuE64369B1P321C3HHFjsfsy1W1PPWZpo52SmpigPc4qe80oqXz6snln+6mK22pS6zbUGJmp87PGz3E24x1X/FtR3jqnPAtCYfIl+vyml+DcqqKCCCuoU1B9JNr4wl9bUVgAAAABJRU5ErkJggg=="}};
+let liveData = {meals:[], seats:[], notices:[], academic:[], diagnostics:[]};
+let stream = null;
+let scanTimer = null;
+
+function $(id) { return document.getElementById(id); }
+function nowText() { return new Date().toLocaleString('ko-KR', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+function normalizeCode(raw) {
+  if(!raw) return '';
+  raw = String(raw).trim();
+  try { const u = new URL(raw); return (u.searchParams.get('code') || u.hash.replace('#','') || raw).trim(); } catch(e) { return raw; }
+}
+function escapeHtml(s) { return String(s??'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+function showPanel(name) {
+  ['data','checkin','stamps','admin'].forEach(n=>{
+    $('panel-'+n).classList.toggle('active', n===name);
+    $('tab-'+n).classList.toggle('active', n===name);
+  });
+  if(name==='stamps') renderStamps();
+}
+function setLoading() {
+  $('diagnostics').innerHTML = '<div class="item">불러오는 중...</div>';
+  $('updatedAt').textContent = '데이터 요청 중입니다.';
+}
+async function refreshData() {
+  setLoading();
+  try {
+    const res = await fetch('/.netlify/functions/pnu-data?ts=' + Date.now(), {cache:'no-store'});
+    const data = await res.json();
+    liveData = data;
+    renderLiveData();
+    generateQuest();
+  } catch(e) {
+    liveData = {meals:[],seats:[],notices:[],academic:[],diagnostics:[{name:'전체 연동',ok:false,message:e.message}]};
+    renderLiveData();
+  }
+}
+function renderLiveData() {
+  const mealCount = (liveData.meals||[]).length, seatCount=(liveData.seats||[]).length, noticeCount=(liveData.notices||[]).length+(liveData.academic||[]).length;
+  $('mealCount').textContent=mealCount; $('seatCount').textContent=seatCount; $('noticeCount').textContent=noticeCount; $('updatedAt').textContent='마지막 업데이트: '+nowText(); $('phoneTime').textContent='업데이트 '+nowText();
+  $('diagnostics').innerHTML=(liveData.diagnostics||[]).map(d=>`<div class="item"><b>${d.ok?'<span class="diag-ok">성공</span>':'<span class="diag-bad">확인 필요</span>'} · ${escapeHtml(d.name)}</b><span class="muted">${escapeHtml(d.message||'')}</span></div>`).join('') || '<div class="item">진단 정보 없음</div>';
+  $('meals').innerHTML=(liveData.meals||[]).slice(0,12).map(m=>`<div class="item"><b>${escapeHtml(m.place||'식당')} · ${escapeHtml(m.type||'')}</b><span>${escapeHtml(m.menu||'등록된 식단이 없습니다.')}</span></div>`).join('') || '<div class="item">식단 데이터를 찾지 못했습니다.</div>';
+  $('seats').innerHTML=(liveData.seats||[]).slice(0,15).map(s=>`<div class="item"><b>${escapeHtml(s.room)} <span class="diag-ok">잔여 ${escapeHtml(s.available)}석</span></b><span class="muted">${escapeHtml(s.used||'')} / ${escapeHtml(s.total||'')} · ${escapeHtml(s.rate||'')}</span></div>`).join('') || '<div class="item">좌석 데이터를 찾지 못했습니다.</div>';
+  const noticeItems=[...(liveData.notices||[]).map(n=>({...n,kind:'공지'})), ...(liveData.academic||[]).map(n=>({...n,kind:'학사'}))];
+  $('notices').innerHTML=noticeItems.slice(0,14).map(n=>`<div class="item"><b>${escapeHtml(n.kind)} · ${escapeHtml(n.title)}</b><span class="muted">${escapeHtml(n.date||n.period||'')}</span></div>`).join('') || '<div class="item">공지 데이터를 찾지 못했습니다.</div>';
+}
+function generateQuest() {
+  const seat=(liveData.seats||[])[0];
+  const meal=(liveData.meals||[]).find(m=>m.menu && !m.menu.includes('등록된 식단이 없습니다')) || (liveData.meals||[])[0];
+  const notice=(liveData.notices||[])[0];
+  const academic=(liveData.academic||[])[0];
+  const reasons=[];
+  if(seat) reasons.push(`좌석 여유가 많은 곳: ${seat.room} 잔여 ${seat.available}석`);
+  if(meal) reasons.push(`식단 확인: ${meal.place} ${meal.type}`);
+  if(notice) reasons.push(`최근 공지: ${notice.title}`);
+  if(academic) reasons.push(`학사일정: ${academic.title||academic.event}`);
+  $('aiReason').innerHTML=reasons.map(r=>`<div class="item">${escapeHtml(r)}</div>`).join('') || '<div class="item">데이터를 먼저 새로고침하세요.</div>';
+  const seatText=seat?`${seat.room}에 잔여석이 ${seat.available}석 있습니다.`:'좌석 데이터가 없으면 가까운 열람실을 직접 확인합니다.';
+  const mealText=meal?`${meal.place} ${meal.type}: ${meal.menu}`:'오늘 식단 정보가 없으면 주변 학생식당을 확인합니다.';
+  const noticeText=notice?notice.title:'중요 공지 없음';
+  const academicText=academic?(academic.title||academic.event):'학사일정 없음';
+  $('questPreview').innerHTML=`
+    <div class="quest-card"><h3>오늘의 캠퍼스 퀘스트</h3><p><b>1단계</b> ${escapeHtml(mealText)}<br><b>2단계</b> ${escapeHtml(seatText)}<br><b>3단계</b> 공지 확인: ${escapeHtml(noticeText)}<br><b>보너스</b> ${escapeHtml(academicText)}</p><div class="chips"><span class="chip">AI 추천</span><span class="chip">실시간 데이터</span><span class="chip">QR 인증 필요</span></div></div>
+    <div class="quest-card"><h3>완료 조건</h3><p>장소 QR 인증 + 위치/시간 확인을 통과하면 스탬프가 지급됩니다.</p><button onclick="showPanel('checkin')">QR 인증하기</button></div>`;
+}
+function renderQrCards() {
+  const html=Object.values(QR_CODES).map(q=>`<div class="qr-card"><img src="${q.png}" alt="${q.label} QR"><b>${escapeHtml(q.emoji)} ${escapeHtml(q.label)}</b><div class="muted small">${escapeHtml(q.place)}</div><div class="evidence">${escapeHtml(q.code)}</div><button class="secondary" style="margin-top:8px;color:#0f172a;border-color:#d1d5db;background:#f3f4f6" onclick="quickDemo('${q.code}')">이 QR로 인증</button></div>`).join('');
+  $('qrQuick').innerHTML=html;
+  $('qrAdmin').innerHTML=html;
+}
+function getStamps() { try { return JSON.parse(localStorage.getItem('questmate_stamps_v3')||'[]'); } catch(e) { return []; } }
+function setStamps(arr) { localStorage.setItem('questmate_stamps_v3', JSON.stringify(arr)); renderStamps(); }
+function saveStamp(result) {
+  const stamps=getStamps();
+  stamps.unshift(result);
+  setStamps(stamps.slice(0,50));
+}
+function renderStamps() {
+  const stamps=getStamps();
+  $('stampCount').textContent=stamps.length;
+  $('stampbook').innerHTML=stamps.length?stamps.map(s=>`<div class="stamp"><div class="icon">${escapeHtml(s.emoji||'✅')}</div><b>${escapeHtml(s.label||s.questId)}</b><div class="muted">${escapeHtml(s.verifiedAt)}</div><div class="small">${escapeHtml(s.method||'QR')}</div></div>`).join(''):'<div class="item">아직 획득한 스탬프가 없습니다.</div>';
+  $('evidenceLog').innerHTML=stamps.length?stamps.map(s=>`<div class="item"><b>${escapeHtml(s.label)} · ${escapeHtml(s.status)}</b><div class="evidence">ID: ${escapeHtml(s.evidenceId)}<br>code: ${escapeHtml(s.code)}<br>method: ${escapeHtml(s.method)}<br>note: ${escapeHtml(s.note||'')}</div></div>`).join(''):'<div class="item">인증 로그 없음</div>';
+}
+async function getGeoOrDemo(mode) {
+  if(mode==='demo') return {lat:35.2329,lng:129.0840,demo:true};
+  return new Promise(resolve=>{
+    if(!navigator.geolocation) return resolve({demo:false,error:'geolocation unsupported'});
+    navigator.geolocation.getCurrentPosition(pos=>resolve({lat:pos.coords.latitude,lng:pos.coords.longitude,demo:false}), err=>resolve({demo:false,error:err.message}), {enableHighAccuracy:true, timeout:7000});
+  });
+}
+async function verifyCode(rawCode, mode='demo') {
+  const code=normalizeCode(rawCode);
+  if(!code) { $('checkinResult').innerHTML='<div class="item"><span class="diag-bad">인증코드를 입력하세요.</span></div>'; return; }
+  const geo=await getGeoOrDemo(mode);
+  let result;
+  try {
+    const res=await fetch('/.netlify/functions/checkin', {method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({code, lat:geo.lat, lng:geo.lng, demoMode:geo.demo, geoError:geo.error})});
+    result=await res.json();
+  } catch(e) {
+    // Local/offline fallback for presentation
+    const found=Object.values(QR_CODES).find(q=>q.code===code);
+    result=found?{ok:true,status:'verified-demo-fallback',code,label:found.label,emoji:found.emoji,method:'client fallback',evidenceId:'LOCAL-'+Date.now(),verifiedAt:new Date().toLocaleString('ko-KR'),note:'Netlify Function 호출 실패 시 클라이언트 데모 검증'}:{ok:false,message:'알 수 없는 코드입니다.'};
+  }
+  if(result.ok) { saveStamp(result); $('checkinResult').innerHTML=`<div class="item"><b><span class="diag-ok">인증 성공</span> · ${escapeHtml(result.label)}</b><div class="evidence">${escapeHtml(result.evidenceId)}<br>${escapeHtml(result.note||'')}</div></div>`; showPanel('stamps'); }
+  else { $('checkinResult').innerHTML=`<div class="item"><b><span class="diag-bad">인증 실패</span></b><p>${escapeHtml(result.message||'인증할 수 없습니다.')}</p></div>`; }
+}
+function verifyManualCode() { verifyCode($('codeInput').value, $('modeSelect').value); }
+function quickDemo(code) { $('codeInput').value=code; $('modeSelect').value='demo'; verifyCode(code,'demo'); }
+async function startQrScan() {
+  const box=$('scanbox'); box.classList.add('on');
+  if(!('BarcodeDetector' in window)) { $('checkinResult').innerHTML='<div class="item"><span class="diag-warn">이 브라우저는 QR 자동 스캔을 지원하지 않습니다. 인증코드 입력 또는 데모 인증을 사용하세요.</span></div>'; return; }
+  try {
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    const video=$('video'); video.srcObject=stream; await video.play();
+    const detector=new BarcodeDetector({formats:['qr_code']});
+    scanTimer=setInterval(async()=>{
+      try { const codes=await detector.detect(video); if(codes.length) { const raw=codes[0].rawValue; stopQrScan(); $('codeInput').value=normalizeCode(raw); verifyCode(raw, $('modeSelect').value); } } catch(e) {}
+    }, 700);
+  } catch(e) { $('checkinResult').innerHTML='<div class="item"><span class="diag-bad">카메라를 열 수 없습니다: '+escapeHtml(e.message)+'</span></div>'; }
+}
+function stopQrScan() { if(scanTimer) clearInterval(scanTimer); scanTimer=null; if(stream) { stream.getTracks().forEach(t=>t.stop()); stream=null; } $('scanbox').classList.remove('on'); }
+function exportLog() {
+  const blob=new Blob([JSON.stringify(getStamps(), null, 2)], {type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='questmate_checkin_log.json'; a.click(); URL.revokeObjectURL(a.href);
+}
+function clearStamps() { if(confirm('스탬프와 인증 로그를 초기화할까요?')) setStamps([]); }
+renderQrCards(); renderStamps();
+</script>
+</body>
+</html>
